@@ -1,0 +1,165 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: users
+    // Document ID: {userId}
+    // Fields:
+    //   - uid: string (required)
+    //   - name: string
+    //   - email: string (required)
+    //   - photoURL: string
+    //   - balance: number
+    //   - currency: string
+    //
+    // Collection: transactions
+    // Document ID: auto-generated
+    // Fields:
+    //   - uid: string (required, owner)
+    //   - amount: number (required)
+    //   - type: string (required, enum: ['income', 'expense'])
+    //   - category: string
+    //   - date: timestamp (required)
+    //   - description: string
+    //
+    // Collection: wallets
+    // Document ID: auto-generated
+    // Fields:
+    //   - uid: string (required, owner)
+    //   - balance: number (required)
+    //   - currency: string
+    //
+    // Collection: invoices
+    // Document ID: auto-generated
+    // Fields:
+    //   - uid: string (required, owner)
+    //   - amount: number (required)
+    //   - status: string (required, enum: ['paid', 'unpaid'])
+    //   - dueDate: timestamp (required)
+    //   - clientName: string
+    //   - description: string
+    //
+    // Collection: cards
+    // Document ID: auto-generated
+    // Fields:
+    //   - uid: string (required, owner)
+    //   - cardNumber: string (required, masked)
+    //   - cardHolder: string (required)
+    //   - expiry: string
+    //   - type: string
+    //
+    // ===============================================================
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+    
+    function isDocOwner() {
+      return isAuthenticated() && request.auth.uid == resource.data.uid;
+    }
+    
+    function isRequestOwner() {
+      return isAuthenticated() && request.auth.uid == request.resource.data.uid;
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidDate(date) {
+      return date is timestamp || (date is string && date.size() < 100);
+    }
+
+    // ===============================================================
+    // Validation Functions
+    // ===============================================================
+
+    function isValidUser(data) {
+      return data.uid is string && 
+             data.uid.size() < 128 &&
+             data.email is string && 
+             isValidEmail(data.email) &&
+             (!('name' in data) || (data.name is string && data.name.size() < 100));
+    }
+
+    function isValidTransaction(data) {
+      return data.uid is string && 
+             data.amount is number && 
+             data.type in ['income', 'expense'] &&
+             isValidDate(data.date);
+    }
+
+    function isValidWallet(data) {
+      return data.uid is string && data.balance is number;
+    }
+
+    function isValidInvoice(data) {
+      return data.uid is string && 
+             data.amount is number && 
+             data.status in ['paid', 'unpaid'] &&
+             isValidDate(data.dueDate);
+    }
+
+    function isValidCard(data) {
+      return data.uid is string && 
+             data.cardNumber is string && 
+             data.cardNumber.size() <= 16 &&
+             data.cardHolder is string &&
+             data.cardHolder.size() < 100;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create: if isOwner(userId) && isValidUser(request.resource.data);
+      allow update: if isOwner(userId) && isValidUser(request.resource.data);
+    }
+
+    match /transactions/{transactionId} {
+      allow read: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      allow create: if isRequestOwner() && isValidTransaction(request.resource.data);
+      allow update: if isDocOwner() && isRequestOwner() && isValidTransaction(request.resource.data);
+      allow delete: if isDocOwner();
+    }
+
+    match /wallets/{walletId} {
+      allow read: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      allow create: if isRequestOwner() && isValidWallet(request.resource.data);
+      allow update: if isDocOwner() && isRequestOwner() && isValidWallet(request.resource.data);
+      allow delete: if isDocOwner();
+    }
+
+    match /invoices/{invoiceId} {
+      allow read: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      allow create: if isRequestOwner() && isValidInvoice(request.resource.data);
+      allow update: if isDocOwner() && isRequestOwner() && isValidInvoice(request.resource.data);
+      allow delete: if isDocOwner();
+    }
+
+    match /cards/{cardId} {
+      allow read: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      allow create: if isRequestOwner() && isValidCard(request.resource.data);
+      allow update: if isDocOwner() && isRequestOwner() && isValidCard(request.resource.data);
+      allow delete: if isDocOwner();
+    }
+    
+    match /{path=**} {
+      allow read, write: if false;
+    }
+  }
+}

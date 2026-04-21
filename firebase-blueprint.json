@@ -1,0 +1,92 @@
+{
+  "entities": {
+    "User": {
+      "title": "User Profile",
+      "description": "User account information and balance",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "photoURL": { "type": "string" },
+        "balance": { "type": "number" },
+        "currency": { "type": "string" }
+      },
+      "required": ["uid", "email"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Financial transaction record",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "amount": { "type": "number" },
+        "type": { "type": "string", "enum": ["income", "expense"] },
+        "category": { "type": "string" },
+        "date": { "type": "string", "format": "date-time" },
+        "description": { "type": "string" }
+      },
+      "required": ["uid", "amount", "type", "date"]
+    },
+    "Wallet": {
+      "title": "Wallet",
+      "description": "User wallet details",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "balance": { "type": "number" },
+        "currency": { "type": "string" }
+      },
+      "required": ["uid", "balance"]
+    },
+    "Invoice": {
+      "title": "Invoice",
+      "description": "Billing invoice",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "amount": { "type": "number" },
+        "status": { "type": "string", "enum": ["paid", "unpaid"] },
+        "dueDate": { "type": "string", "format": "date-time" },
+        "clientName": { "type": "string" },
+        "description": { "type": "string" }
+      },
+      "required": ["uid", "amount", "status", "dueDate"]
+    },
+    "Card": {
+      "title": "Card",
+      "description": "Saved payment card",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "cardNumber": { "type": "string" },
+        "cardHolder": { "type": "string" },
+        "expiry": { "type": "string" },
+        "type": { "type": "string" }
+      },
+      "required": ["uid", "cardNumber", "cardHolder"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "User",
+      "description": "User profile documents"
+    },
+    "/transactions/{transactionId}": {
+      "schema": "Transaction",
+      "description": "Financial transactions"
+    },
+    "/wallets/{walletId}": {
+      "schema": "Wallet",
+      "description": "User wallets"
+    },
+    "/invoices/{invoiceId}": {
+      "schema": "Invoice",
+      "description": "User invoices"
+    },
+    "/cards/{cardId}": {
+      "schema": "Card",
+      "description": "User saved cards"
+    }
+  }
+}
