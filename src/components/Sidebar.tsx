@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, Wallet, ArrowLeftRight, FileText, 
   CreditCard, Settings, ChevronLeft, ChevronRight, Zap,
-  TrendingUp, Crown
+  TrendingUp, Crown, BrainCircuit
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { auth, logout } from '../lib/firebase';
@@ -19,6 +19,7 @@ const navItems = [
   { path: '/transactions', icon: ArrowLeftRight, label: 'Transactions', color: '#f59e0b' },
   { path: '/invoices', icon: FileText, label: 'Invoices', color: '#a855f7' },
   { path: '/cards', icon: CreditCard, label: 'Cards', color: '#ec4899' },
+  { path: '/chatbot', icon: BrainCircuit, label: 'AI Chatbot', color: '#06b6d4' },
   { path: '/settings', icon: Settings, label: 'Settings', color: '#94a3b8' },
 ];
 

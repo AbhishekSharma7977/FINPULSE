@@ -157,6 +157,20 @@ service cloud.firestore {
       allow update: if isDocOwner() && isRequestOwner() && isValidCard(request.resource.data);
       allow delete: if isDocOwner();
     }
+
+    // ── AI Chatbot collections ──────────────────────────────────────────────
+    match /chatSessions/{sessionId} {
+      allow read: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      allow create: if isRequestOwner();
+      allow update: if isDocOwner() && isRequestOwner();
+      allow delete: if isDocOwner();
+    }
+
+    match /chatMessages/{messageId} {
+      allow read: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      allow create: if isRequestOwner();
+      allow delete: if isDocOwner();
+    }
     
     match /{path=**} {
       allow read, write: if false;

@@ -159,7 +159,7 @@ export default function Navbar({ toggleSidebar }: NavbarProps) {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: 8, scale: 0.95 }}
                 transition={{ duration: 0.15 }}
-                className="absolute right-0 top-full mt-2 w-56 rounded-2xl shadow-2xl overflow-hidden z-50"
+                className="absolute right-0 top-full mt-2 w-56 rounded-2xl shadow-2xl overflow-hidden z-[9999]"
                 style={{ 
                   background: '#0d1528',
                   border: '1px solid rgba(255,255,255,0.08)',

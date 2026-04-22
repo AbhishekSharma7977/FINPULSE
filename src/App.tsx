@@ -10,6 +10,7 @@ import Invoices from './components/Invoices';
 import Cards from './components/Cards';
 import Settings from './components/Settings';
 import Auth from './components/Auth';
+import ChatBot from './components/ChatBot';
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -21,6 +22,7 @@ function AnimatedRoutes() {
       <Route path="/invoices" element={<Invoices />} />
       <Route path="/cards" element={<Cards />} />
       <Route path="/settings" element={<Settings />} />
+      <Route path="/chatbot" element={<ChatBot />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
