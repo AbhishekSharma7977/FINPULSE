@@ -8,7 +8,7 @@ import axios from 'axios';
 const openRouterClient = axios.create({
   baseURL: 'https://openrouter.ai/api/v1',
   headers: {
-    Authorization: `Bearer ${process.env.VITE_OPENROUTER_API_KEY || process.env.OPEN_ROUTER_KEY || ''}`,
+    Authorization: `Bearer ${process.env.VITE_OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY || process.env.OPEN_ROUTER_KEY || ''}`,
     'Content-Type': 'application/json',
     'HTTP-Referer': 'https://finpulse-zbdj.vercel.app',
     'X-Title': 'FinPulse AI Dashboard',
